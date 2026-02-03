@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["php74", "php74Extensions.pdo", "php74Extensions.pdo_sqlite", "php74Extensions.mbstring", "php74Extensions.gd", "php74Extensions.bcmath"]
+nixPkgs = ["php74", "php74Extensions.pdo", "php74Extensions.pdo_sqlite", "php74Extensions.mbstring", "php74Extensions.gd", "php74Extensions.bcmath", "php74Extensions.tokenizer", "php74Extensions.xml"]
 
 [phases.build]
-cmds = ["composer install --no-dev --optimize-autoloader"]
+cmds = ["mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache", "chmod -R 777 storage bootstrap/cache"]
 
 [start]
 cmd = "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
