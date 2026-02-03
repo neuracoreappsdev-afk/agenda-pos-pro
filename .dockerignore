@@ -1,0 +1,13 @@
+.git
+.gemini
+.agent
+node_modules
+# vendor
+.env
+Dockerfile
+.dockerignore
+*.sqlite
+storage/logs/*.log
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/cache/*

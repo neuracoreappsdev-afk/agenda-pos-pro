@@ -1,0 +1,8 @@
+﻿
+                                                           
+  [Symfony\Component\Debug\Exception\FatalThrowableError]  
+  Call to undefined method                                 
+   Illuminate\Database\Sch                                 
+  ema\Blueprint::id()                                      
+                                                           
+

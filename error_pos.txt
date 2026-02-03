@@ -1,0 +1,1 @@
+{"success":true,"sale_id":12,"receipt_url":"http:\/\/localhost\/admin\/factura\/print\/12","message":"Venta procesada y atomizada correctamente"}

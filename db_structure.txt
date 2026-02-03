@@ -1,0 +1,15 @@
+admin
+appointments
+booking_dates
+booking_datetimes
+booking_times
+business_settings
+configurations
+customers
+migrations
+package_specialist
+packages
+password_resets
+specialists
+time_intervals
+users

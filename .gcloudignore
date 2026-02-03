@@ -1,0 +1,13 @@
+.git
+.gemini
+.agent
+node_modules
+# Do NOT ignore vendor if we want to copy it locally (though better to build it in Docker)
+# vendor/
+.env
+# Ignore sqlite locally to use the one in the container or a fresh one
+# *.sqlite
+storage/logs/*.log
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/cache/*

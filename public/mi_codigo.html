@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Turnos Manicura (Orden Llegada)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CSS desde CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      /* Color principal configurable */
+      --accent: #6366f1;
+      /* violeta suave por defecto */
+      --accent-strong: #4f46e5;
+      /* un poco más intenso */
+      --accent-soft: rgba(99, 102, 241, 0.08);
+    }
+
+    body {
+      background: #f5f5f7;
+      color: #0f172a;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .card-inactiva {
+      filter: grayscale(1);
+      opacity: 0.6;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #cbd5f5;
+      border-radius: 999px;
+    }
+
+    /* Botones con color configurable */
+    .btn-accent {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.2);
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-strong);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.28);
+    }
+
+    .btn-ghost {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #374151;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+    }
+
+    .btn-ghost:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+      transform: translateY(-1px);
+    }
+
+    .pill-accent {
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+    }
+
+    .panel-dark,
+    .panel-soft {
+      background: #ffffff;
+      border-radius: 1.25rem;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 10px 30px rgba(148, 163, 184, 0.32);
+    }
+
+    .panel-soft {
+      box-shadow: 0 8px 22px rgba(148, 163, 184, 0.26);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <div class="max-w-7xl mx-auto p-4 md:p-6 flex flex-col gap-4">
+    <!-- Encabezado -->
+    <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 flex items-center gap-2">
+          Turnos Manicura
+          <span class="text-[11px] uppercase tracking-widest pill-accent px-3 py-1 rounded-full">
+            Orden de llegada
+          </span>
+        </h1>
+        <p class="text-xs md:text-sm text-slate-500 mt-2 max-w-xl">
+          Panel tipo bento para organizar colaboradoras, servicios y turnos en tiempo real.
+          Tus datos se guardan automáticamente en este navegador (LocalStorage).
+        </p>
+      </div>
+
+      <!-- Botones principales + pickers + control de día -->
+      <div class="flex flex-col items-end gap-2">
+        <div class="flex flex-wrap gap-2 items-center justify-end">
+          <button id="btnNuevaColaboradora"
+            class="btn-accent px-3 py-2 text-xs md:text-sm rounded-xl flex items-center gap-2">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-white/80"></span>
+            Nueva colaboradora
+          </button>
+
+          <button id="btnConfigServicios" class="btn-ghost px-3 py-2 text-xs md:text-sm rounded-xl">
+            Servicios
+          </button>
+
+          <button id="btnAdminColaboradoras" class="btn-ghost px-3 py-2 text-xs md:text-sm rounded-xl">
+            Administrar colaboradoras
+          </button>
+
+          <button id="btnExportCSV" class="btn-ghost px-3 py-2 text-xs md:text-sm rounded-xl">
+            CSV
+          </button>
+
+          <button id="btnExportXML" class="btn-ghost px-3 py-2 text-xs md:text-sm rounded-xl">
+            XML
+          </button>
+
+          <button id="btnDashboard"
+            class="btn-ghost px-3 py-2 text-xs md:text-sm rounded-xl border-2 border-indigo-300">
+            Gráficos / Dashboard
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 justify-end">
+          <!-- Tono principal -->
+          <div
+            class="flex items-center gap-2 bg-white border border-slate-200 rounded-full py-1 pl-3 pr-2 text-[11px] text-slate-500 shadow-sm">
+            <span>Tono principal</span>
+            <input type="color" id="colorAccent"
+              class="w-6 h-6 rounded-full border border-slate-300 p-0 bg-transparent cursor-pointer" />
+          </div>
+
+          <!-- Inicio / fin de día -->
+          <button id="btnIniciarDia" class="btn-ghost px-3 py-1.5 text-[11px] rounded-full">
+            Iniciar día (hoy)
+          </button>
+          <button id="btnCerrarDia" class="btn-ghost px-3 py-1.5 text-[11px] rounded-full">
+            Cerrar día
+          </button>
+
+          <!-- Buscar por fecha + colaboradora -->
+          <div
+            class="flex flex-wrap items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-1 text-[11px] text-slate-500 shadow-sm">
+            <span>Ver día</span>
+            <input type="date" id="inputFechaBusqueda"
+              class="text-[11px] border border-slate-200 rounded-full px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-indigo-300" />
+            <select id="selectColaboradoraFiltro"
+              class="text-[11px] border border-slate-200 rounded-full px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-indigo-300 bg-white">
+              <!-- opciones se llenan por JS -->
+            </select>
+            <button id="btnVerDia" class="btn-ghost px-2 py-1 text-[11px] rounded-full">
+              Ir
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Resumen rápido -->
+    <section id="resumenPanel" class="panel-soft p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex flex-col">
+          <span class="text-[11px] uppercase tracking-wide text-slate-400">Resumen del día</span>
+          <span id="etiquetaFecha" class="text-[11px] font-medium text-slate-600 mt-0.5">
+            <!-- se rellena por JS -->
+          </span>
+        </div>
+        <div class="text-[11px] text-slate-400">
+          Día y colaboradora activa para métricas y dashboard.
+        </div>
+      </div>
+      <div class="grid gap-3 md:grid-cols-3">
+        <div class="flex flex-col">
+          <span class="text-[11px] uppercase tracking-wide text-slate-400">Total servicios</span>
+          <span id="totalServiciosHoy" class="text-2xl font-semibold mt-1 text-slate-900">0</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[11px] uppercase tracking-wide text-slate-400">Más turnos</span>
+          <span id="colabMasTurnos" class="text-sm font-medium mt-1 text-slate-800">-</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[11px] uppercase tracking-wide text-slate-400">Menos turnos</span>
+          <span id="colabMenosTurnos" class="text-sm font-medium mt-1 text-slate-800">-</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid de tarjetas de colaboradoras -->
+    <main>
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+          Colaboradoras (arrastra las tarjetas para reorganizar)
+        </h2>
+      </div>
+
+      <div id="gridColaboradoras" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+        <!-- Tarjetas generadas por JavaScript -->
+      </div>
+    </main>
+
+    <!-- Leyenda -->
+    <section class="mt-2 text-[11px] text-slate-500">
+      <p>
+        Orden de referencia de las 6 primeras tarjetas:
+        <strong>1</strong> (Izq. arriba),
+        <strong>2</strong> (Centro arriba),
+        <strong>3</strong> (Derecha arriba),
+        <strong>4</strong> (Izq. abajo),
+        <strong>5</strong> (Centro abajo),
+        <strong>6</strong> (Derecha abajo).
+        Puedes arrastrar cualquier tarjeta a cualquier posición.
+      </p>
+    </section>
+
+    <!-- Modal Servicios -->
+    <div id="modalServicios" class="fixed inset-0 bg-black/30 z-40 items-center justify-center hidden">
+      <div class="panel-dark max-w-xl w-full p-4 md:p-6 text-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-slate-900">Configuración de servicios</h3>
+          <button id="btnCerrarServicios"
+            class="text-slate-400 hover:text-slate-700 text-xl leading-none">&times;</button>
+        </div>
+
+        <form id="formServicio" class="grid md:grid-cols-2 gap-3 mb-4">
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-[11px] text-slate-600">Nombre del servicio</label>
+            <input type="text" id="servicioNombre"
+              class="border border-slate-200 bg-white rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-300"
+              placeholder="Manicure básica" required />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-[11px] text-slate-600">Duración (minutos)</label>
+            <input type="number" id="servicioMinutos" min="1"
+              class="border border-slate-200 bg-white rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-300"
+              placeholder="45" required />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-[11px] text-slate-600">Costo (COP)</label>
+            <input type="number" id="servicioCosto" min="0"
+              class="border border-slate-200 bg-white rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-300"
+              placeholder="30000" required />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-[11px] text-slate-600">% para colaboradora</label>
+            <input type="number" id="servicioPorcentaje" min="0" max="100"
+              class="border border-slate-200 bg-white rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-300"
+              placeholder="50" required />
+          </div>
+          <div class="md:col-span-2 flex justify-end">
+            <button type="submit" class="btn-accent px-4 py-2 rounded-xl text-xs">
+              Agregar servicio
+            </button>
+          </div>
+        </form>
+
+        <div class="border border-slate-200 rounded-xl p-3 max-h-60 overflow-auto scrollbar-thin bg-slate-50/70">
+          <table class="w-full text-left text-[11px]">
+            <thead class="text-slate-500 border-b border-slate-200">
+              <tr>
+                <th class="py-1 pr-2">Servicio</th>
+                <th class="py-1 pr-2">Min</th>
+                <th class="py-1 pr-2">Costo</th>
+                <th class="py-1 pr-2">% Colab</th>
+                <th class="py-1 text-right">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaServicios" class="align-middle text-slate-800">
+              <!-- filas servicios -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Dashboard -->
+    <div id="modalDashboard" class="fixed inset-0 bg-black/30 z-40 items-center justify-center hidden">
+      <div class="panel-dark max-w-5xl w-full p-4 md:p-6 max-h-[92vh] overflow-auto scrollbar-thin">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 id="tituloDashboard" class="text-lg md:text-xl font-semibold text-slate-900">
+              Dashboard de turnos
+            </h3>
+            <p id="subtituloDashboard" class="text-[11px] text-slate-500 mt-1">
+              <!-- Día + colaboradora se establece por JS -->
+            </p>
+          </div>
+          <button id="btnCerrarDashboard"
+            class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+        </div>
+
+        <div id="dashboardContenido" class="grid gap-4 md:grid-cols-3 text-sm">
+          <!-- contenido generado dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Administrar colaboradoras -->
+    <div id="modalColaboradoras" class="fixed inset-0 bg-black/30 z-40 items-center justify-center hidden">
+      <div class="panel-dark max-w-xl w-full p-4 md:p-6 text-sm">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-slate-900">Administrar colaboradoras</h3>
+          <button id="btnCerrarColaboradoras"
+            class="text-slate-400 hover:text-slate-700 text-xl leading-none">&times;</button>
+        </div>
+        <p class="text-[11px] text-slate-500 mb-2">
+          Aquí puedes ver todas las colaboradoras y eliminarlas de forma segura (no se hace desde la tarjeta).
+        </p>
+
+        <div class="border border-slate-200 rounded-xl p-3 max-h-72 overflow-auto scrollbar-thin bg-slate-50/70">
+          <table class="w-full text-[11px]">
+            <thead class="border-b border-slate-200 text-slate-500">
+              <tr>
+                <th class="py-1 pr-2 text-left">Nombre</th>
+                <th class="py-1 pr-2 text-center">Posición</th>
+                <th class="py-1 pr-2 text-center">Activa</th>
+                <th class="py-1 text-right">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaColaboradoras" class="align-middle">
+              <!-- filas creadas por JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // Estado y utilidades
+    // =========================
+    const STORAGE_KEY = "turnosManicuraDataV1";
+    const THEME_KEY = "turnosThemeV1";
+
+    let state = null;
+    let draggedColaboradoraId = null;
+    let timerInterval = null;
+
+    function hoyISO() {
+      return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    }
+
+    function generarId(prefijo) {
+      return prefijo + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+    }
+
+    function guardarEstado() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function cargarEstado() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          state = JSON.parse(saved);
+        } catch (e) {
+          console.error("Error al leer LocalStorage, se reinicia estado:", e);
+          state = null;
+        }
+      }
+
+      if (!state) {
+        state = {
+          colaboradoras: [],
+          servicios: [],
+          historial: [],
+          config: {
+            fechaSeleccionada: hoyISO(),
+            diasCerrados: {},
+            colaboradoraSeleccionadaId: null
+          }
+        };
+        // 6 colaboradoras por defecto
+        for (let i = 1; i <= 6; i++) {
+          state.colaboradoras.push({
+            id: generarId("col"),
+            nombre: "Colaboradora " + i,
+            foto: "",
+            activa: true,
+            orden: i - 1,
+            servicioSeleccionadoId: null,
+            servicioEnCurso: null
+          });
+        }
+        guardarEstado();
+      }
+
+      // Normalizar
+      state.colaboradoras = (state.colaboradoras || []).map((c, idx) => ({
+        id: c.id || generarId("col"),
+        nombre: c.nombre || "Colaboradora " + (idx + 1),
+        foto: c.foto || "",
+        activa: typeof c.activa === "boolean" ? c.activa : true,
+        orden: typeof c.orden === "number" ? c.orden : idx,
+        servicioSeleccionadoId: c.servicioSeleccionadoId || null,
+        servicioEnCurso: c.servicioEnCurso || null
+      }));
+      state.servicios = state.servicios || [];
+      state.historial = state.historial || [];
+      state.config = state.config || {};
+      state.config.fechaSeleccionada = state.config.fechaSeleccionada || hoyISO();
+      state.config.diasCerrados = state.config.diasCerrados || {};
+      if (typeof state.config.colaboradoraSeleccionadaId === "undefined") {
+        state.config.colaboradoraSeleccionadaId = null;
+      }
+    }
+
+    // Fecha activa para métricas / dashboard
+    function obtenerFechaSeleccionada() {
+      return state && state.config && state.config.fechaSeleccionada
+        ? state.config.fechaSeleccionada
+        : hoyISO();
+    }
+
+    function establecerFechaSeleccionada(fechaStr) {
+      state.config.fechaSeleccionada = fechaStr;
+      guardarEstado();
+      renderResumen();
+    }
+
+    // Colaboradora activa para filtro
+    function obtenerColaboradoraSeleccionadaId() {
+      return state && state.config ? (state.config.colaboradoraSeleccionadaId || null) : null;
+    }
+
+    function establecerColaboradoraSeleccionada(id) {
+      state.config.colaboradoraSeleccionadaId = id || null;
+      guardarEstado();
+      renderResumen();
+    }
+
+    function obtenerNombreColaboradora(id) {
+      if (!id) return null;
+      const c = state.colaboradoras.find((x) => x.id === id);
+      return c ? c.nombre : null;
+    }
+
+    function formatearFechaHumana(fechaStr) {
+      try {
+        const d = new Date(fechaStr + "T00:00:00");
+        return d.toLocaleDateString("es-CO", {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        });
+      } catch {
+        return fechaStr;
+      }
+    }
+
+    // Tema (color botones)
+    function aplicarTema(accent) {
+      const root = document.documentElement;
+      root.style.setProperty("--accent", accent);
+      try {
+        const c = hexToRgb(accent);
+        if (c) {
+          const stronger = `rgb(${Math.max(c.r - 20, 0)},${Math.max(c.g - 20, 0)},${Math.max(c.b - 20, 0)})`;
+          root.style.setProperty("--accent-strong", stronger);
+        }
+      } catch { }
+    }
+
+    function hexToRgb(hex) {
+      if (!hex) return null;
+      let c = hex.replace("#", "");
+      if (c.length === 3) {
+        c = c.split("").map((x) => x + x).join("");
+      }
+      const num = parseInt(c, 16);
+      return {
+        r: (num >> 16) & 255,
+        g: (num >> 8) & 255,
+        b: num & 255
+      };
+    }
+
+    function cargarTema() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved) {
+        try {
+          const t = JSON.parse(saved);
+          if (t.accent) aplicarTema(t.accent);
+          const picker = document.getElementById("colorAccent");
+          if (picker && t.accent) picker.value = t.accent;
+        } catch { }
+      } else {
+        const picker = document.getElementById("colorAccent");
+        if (picker) picker.value = "#6366f1";
+      }
+    }
+
+    function guardarTema(accent) {
+      localStorage.setItem(THEME_KEY, JSON.stringify({ accent }));
+    }
+
+    function formatearTiempo(ms) {
+      const totalSeg = Math.floor(ms / 1000);
+      const h = Math.floor(totalSeg / 3600);
+      const m = Math.floor((totalSeg % 3600) / 60);
+      const s = totalSeg % 60;
+      const pad = (n) => String(n).padStart(2, "0");
+      return pad(h) + ":" + pad(m) + ":" + pad(s);
+    }
+
+    function formatearCOP(valor) {
+      return new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        maximumFractionDigits: 0
+      }).format(valor || 0);
+    }
+
+    // =========================
+    // Render principal
+    // =========================
+    function renderTodo() {
+      renderColaboradoras();
+      renderSelectorColaboradoraFiltro();
+      renderResumen();
+      renderServiciosTabla();
+      renderTablaColaboradoras();
+    }
+
+    function obtenerColaboradorasOrdenadas() {
+      return [...state.colaboradoras].sort((a, b) => a.orden - b.orden);
+    }
+
+    function renderColaboradoras() {
+      const grid = document.getElementById("gridColaboradoras");
+      grid.innerHTML = "";
+      const colaboradorasOrdenadas = obtenerColaboradorasOrdenadas();
+
+      colaboradorasOrdenadas.forEach((colab) => {
+        const card = document.createElement("div");
+        card.className =
+          "panel-soft p-3 flex flex-col gap-3 transition-transform cursor-move hover:-translate-y-0.5 relative";
+        if (!colab.activa) card.classList.add("card-inactiva");
+        card.setAttribute("draggable", "true");
+        card.dataset.id = colab.id;
+
+        // Número grande de posición (oscurecido un poco)
+        const badgePos = document.createElement("div");
+        badgePos.className =
+          "absolute -top-2 -left-2 w-9 h-9 rounded-2xl bg-slate-200 shadow-md border border-slate-300 flex items-center justify-center text-[15px] font-semibold text-slate-600";
+        badgePos.textContent = colab.orden + 1;
+        card.appendChild(badgePos);
+
+        // Drag & drop
+        card.addEventListener("dragstart", handleDragStart);
+        card.addEventListener("dragover", handleDragOver);
+        card.addEventListener("drop", handleDrop);
+
+        // Header
+        const header = document.createElement("div");
+        header.className = "flex items-start gap-3";
+
+        const fotoWrapper = document.createElement("div");
+        fotoWrapper.className =
+          "w-16 h-28 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center relative";
+
+        const img = document.createElement("img");
+        img.id = "foto-" + colab.id;
+        img.alt = "Foto " + colab.nombre;
+        img.className = "w-full h-full object-cover";
+        if (colab.foto) {
+          img.src = colab.foto;
+        } else {
+          img.classList.add("hidden");
+        }
+
+        const fotoPlaceholder = document.createElement("div");
+        fotoPlaceholder.className =
+          "absolute inset-0 flex flex-col items-center justify-center text-[10px] text-slate-400 gap-1 pointer-events-none " +
+          (colab.foto ? "hidden" : "");
+        fotoPlaceholder.innerHTML =
+          "<span class='pill-accent px-2 py-0.5 rounded-full text-[9px]'>9:16</span><span>Subir foto</span>";
+
+        const inputFile = document.createElement("input");
+        inputFile.type = "file";
+        inputFile.accept = "image/*";
+        inputFile.className = "hidden";
+        inputFile.id = "file-" + colab.id;
+        inputFile.addEventListener("change", (e) => manejarSubirFoto(e, colab.id));
+
+        fotoWrapper.addEventListener("click", () => {
+          inputFile.click();
+        });
+
+        fotoWrapper.appendChild(img);
+        fotoWrapper.appendChild(fotoPlaceholder);
+        fotoWrapper.appendChild(inputFile);
+
+        const headerRight = document.createElement("div");
+        headerRight.className = "flex-1 flex flex-col gap-1";
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.value = colab.nombre;
+        nameInput.className =
+          "w-full text-sm font-semibold border-b border-transparent focus:border-indigo-400 focus:outline-none bg-transparent text-slate-900";
+        nameInput.addEventListener("change", () => {
+          colab.nombre = nameInput.value.trim() || colab.nombre;
+          guardarEstado();
+          renderSelectorColaboradoraFiltro();
+          renderResumen();
+          renderTablaColaboradoras();
+        });
+
+        const lineaBotones = document.createElement("div");
+        lineaBotones.className = "flex items-center gap-2 mt-1";
+
+        const btnActivo = document.createElement("button");
+        btnActivo.type = "button";
+        btnActivo.className =
+          "px-2 py-1 rounded-full text-[10px] font-medium border " +
+          (colab.activa
+            ? "pill-accent border-indigo-300"
+            : "bg-slate-100 border-slate-200 text-slate-400");
+        btnActivo.textContent = colab.activa ? "Activo" : "Inhabilitado";
+
+        btnActivo.addEventListener("click", () => {
+          colab.activa = !colab.activa;
+          guardarEstado();
+          renderColaboradoras();
+          renderTablaColaboradoras();
+        });
+
+        lineaBotones.appendChild(btnActivo);
+
+        headerRight.appendChild(nameInput);
+        headerRight.appendChild(lineaBotones);
+
+        header.appendChild(fotoWrapper);
+        header.appendChild(headerRight);
+        card.appendChild(header);
+
+        // Selector de servicio
+        const serviciosLinea = document.createElement("div");
+        serviciosLinea.className = "flex items-center gap-2 text-[11px] mt-1";
+
+        const labelServ = document.createElement("span");
+        labelServ.className = "text-slate-500 whitespace-nowrap";
+        labelServ.textContent = "Servicio:";
+
+        const selectServ = document.createElement("select");
+        selectServ.className =
+          "flex-1 border border-slate-200 rounded-lg px-2 py-1 text-[11px] bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-300";
+        selectServ.innerHTML = "<option value=''>Selecciona un servicio</option>";
+
+        state.servicios.forEach((srv) => {
+          const opt = document.createElement("option");
+          opt.value = srv.id;
+          opt.textContent =
+            srv.nombre + " · " + srv.minutos + " min · " + formatearCOP(srv.costo);
+          if (colab.servicioSeleccionadoId === srv.id) opt.selected = true;
+          selectServ.appendChild(opt);
+        });
+
+        selectServ.addEventListener("change", () => {
+          colab.servicioSeleccionadoId = selectServ.value || null;
+          guardarEstado();
+        });
+
+        serviciosLinea.appendChild(labelServ);
+        serviciosLinea.appendChild(selectServ);
+        card.appendChild(serviciosLinea);
+
+        // Cronómetro
+        const timerLinea = document.createElement("div");
+        timerLinea.className = "flex items-center justify-between mt-2";
+
+        const tiempoBox = document.createElement("div");
+        tiempoBox.className =
+          "px-2 py-1 rounded-lg bg-slate-900 text-indigo-100 text-xs font-mono border border-slate-800";
+        const spanTiempo = document.createElement("span");
+        spanTiempo.id = "tiempo-" + colab.id;
+
+        if (colab.servicioEnCurso) {
+          const diff = Date.now() - colab.servicioEnCurso.inicio;
+          spanTiempo.textContent = formatearTiempo(diff);
+        } else {
+          spanTiempo.textContent = "00:00:00";
+        }
+        tiempoBox.appendChild(spanTiempo);
+
+        const btnIniciar = document.createElement("button");
+        btnIniciar.type = "button";
+        btnIniciar.className =
+          "ml-2 px-3 py-1.5 rounded-xl text-[11px] btn-accent";
+        btnIniciar.textContent = colab.servicioEnCurso
+          ? "Finalizar servicio"
+          : "Iniciar servicio";
+
+        btnIniciar.addEventListener("click", () => manejarInicioFinServicio(colab.id));
+
+        timerLinea.appendChild(tiempoBox);
+        timerLinea.appendChild(btnIniciar);
+        card.appendChild(timerLinea);
+
+        grid.appendChild(card);
+      });
+
+      gestionarTimerGlobal();
+    }
+
+    // Selector de colaboradora para filtro de fecha
+    function renderSelectorColaboradoraFiltro() {
+      const select = document.getElementById("selectColaboradoraFiltro");
+      if (!select) return;
+
+      const actual = obtenerColaboradoraSeleccionadaId();
+      select.innerHTML = "";
+
+      const optTodas = document.createElement("option");
+      optTodas.value = "";
+      optTodas.textContent = "Todas";
+      select.appendChild(optTodas);
+
+      obtenerColaboradorasOrdenadas().forEach((c) => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.nombre;
+        if (actual && c.id === actual) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      // Si la colaboradora almacenada ya no existe, resetear a todas
+      if (
+        actual &&
+        ![...select.options].some((o) => o.value === actual)
+      ) {
+        select.value = "";
+        state.config.colaboradoraSeleccionadaId = null;
+        guardarEstado();
+      }
+    }
+
+    // =========================
+    // Foto de colaboradora
+    // =========================
+    function manejarSubirFoto(event, colabId) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const dataUrl = e.target.result;
+        const colab = state.colaboradoras.find((c) => c.id === colabId);
+        if (!colab) return;
+        colab.foto = dataUrl;
+        guardarEstado();
+        renderColaboradoras();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // =========================
+    // Iniciar / finalizar servicio
+    // =========================
+    function manejarInicioFinServicio(colabId) {
+      const colab = state.colaboradoras.find((c) => c.id === colabId);
+      if (!colab) return;
+
+      if (!colab.activa) {
+        alert("Esta colaboradora está inhabilitada. Actívala para iniciar un servicio.");
+        return;
+      }
+
+      const servicio = state.servicios.find((s) => s.id === colab.servicioSeleccionadoId);
+      if (!colab.servicioEnCurso && !servicio) {
+        alert("Selecciona un servicio antes de iniciar.");
+        return;
+      }
+
+      if (!colab.servicioEnCurso) {
+        // Iniciar
+        colab.servicioEnCurso = {
+          servicioId: servicio.id,
+          inicio: Date.now()
+        };
+        guardarEstado();
+        renderColaboradoras();
+        return;
+      }
+
+      // Finalizar
+      const servicioEnCurso = colab.servicioEnCurso;
+      const srv = state.servicios.find((s) => s.id === servicioEnCurso.servicioId);
+      if (!srv) {
+        colab.servicioEnCurso = null;
+        guardarEstado();
+        renderColaboradoras();
+        return;
+      }
+
+      const fin = Date.now();
+      const duracionMs = fin - servicioEnCurso.inicio;
+      const duracionMin = Math.round(duracionMs / 60000);
+      const comision = (srv.costo * srv.porcentaje) / 100;
+
+      const registro = {
+        id: generarId("reg"),
+        fecha: hoyISO(), // fecha real del día
+        colaboradoraId: colab.id,
+        colaboradoraNombre: colab.nombre,
+        servicioId: srv.id,
+        servicioNombre: srv.nombre,
+        costo: srv.costo,
+        porcentaje: srv.porcentaje,
+        comision: comision,
+        duracionMin: duracionMin,
+        inicio: servicioEnCurso.inicio,
+        fin: fin
+      };
+
+      state.historial.push(registro);
+      colab.servicioEnCurso = null;
+      guardarEstado();
+      renderTodo();
+
+      alert(
+        "Servicio finalizado:\n" +
+        "- Colaboradora: " + registro.colaboradoraNombre + "\n" +
+        "- Servicio: " + registro.servicioNombre + "\n" +
+        "- Duración: " + duracionMin + " min\n" +
+        "- Comisión: " + formatearCOP(comision)
+      );
+    }
+
+    // =========================
+    // Timer global
+    // =========================
+    function gestionarTimerGlobal() {
+      const hayServiciosEnCurso = state.colaboradoras.some((c) => c.servicioEnCurso);
+      if (hayServiciosEnCurso && !timerInterval) {
+        timerInterval = setInterval(actualizarTiempos, 1000);
+      } else if (!hayServiciosEnCurso && timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function actualizarTiempos() {
+      state.colaboradoras.forEach((c) => {
+        if (!c.servicioEnCurso) return;
+        const diff = Date.now() - c.servicioEnCurso.inicio;
+        const span = document.getElementById("tiempo-" + c.id);
+        if (span) {
+          span.textContent = formatearTiempo(diff);
+        }
+      });
+    }
+
+    // =========================
+    // Drag & Drop reordenar
+    // =========================
+    function handleDragStart(e) {
+      draggedColaboradoraId = this.dataset.id;
+      e.dataTransfer.effectAllowed = "move";
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const targetId = this.dataset.id;
+      if (!draggedColaboradoraId || draggedColaboradoraId === targetId) return;
+
+      const lista = obtenerColaboradorasOrdenadas();
+      const draggedIndex = lista.findIndex((c) => c.id === draggedColaboradoraId);
+      const targetIndex = lista.findIndex((c) => c.id === targetId);
+      if (draggedIndex === -1 || targetIndex === -1) return;
+
+      const [draggedItem] = lista.splice(draggedIndex, 1);
+      lista.splice(targetIndex, 0, draggedItem);
+
+      lista.forEach((c, idx) => {
+        const ref = state.colaboradoras.find((x) => x.id === c.id);
+        if (ref) ref.orden = idx;
+      });
+
+      guardarEstado();
+      renderColaboradoras();
+      renderTablaColaboradoras();
+      draggedColaboradoraId = null;
+    }
+
+    // =========================
+    // Resumen y dashboard por fecha + colaboradora
+    // =========================
+    function filtrarHistorialPorFecha(fecha) {
+      return state.historial.filter((r) => r.fecha === fecha);
+    }
+
+    function calcularResumenPorFecha(fecha, colaboradoraId) {
+      let regs = filtrarHistorialPorFecha(fecha);
+      if (colaboradoraId) {
+        regs = regs.filter((r) => r.colaboradoraId === colaboradoraId);
+      }
+
+      const conteoPorColab = {};
+      regs.forEach((r) => {
+        if (!conteoPorColab[r.colaboradoraId]) {
+          conteoPorColab[r.colaboradoraId] = {
+            id: r.colaboradoraId,
+            nombre: r.colaboradoraNombre,
+            turnos: 0,
+            ingresos: 0,
+            comision: 0
+          };
+        }
+        conteoPorColab[r.colaboradoraId].turnos++;
+        conteoPorColab[r.colaboradoraId].ingresos += r.costo;
+        conteoPorColab[r.colaboradoraId].comision += r.comision;
+      });
+
+      const totalServicios = regs.length;
+      const lista = Object.values(conteoPorColab);
+      let colabMas = "-";
+      let colabMenos = "-";
+
+      if (lista.length > 0) {
+        lista.sort((a, b) => b.turnos - a.turnos);
+        colabMas = lista[0].nombre + " (" + lista[0].turnos + " turnos)";
+        const minTurnos = lista[lista.length - 1].turnos;
+        const candidatosMin = lista.filter((x) => x.turnos === minTurnos);
+        colabMenos = candidatosMin.map((x) => x.nombre).join(", ") + " (" + minTurnos + " turnos)";
+      }
+
+      return { totalServicios, lista, colabMas, colabMenos, registros: regs };
+    }
+
+    function renderResumen() {
+      const fecha = obtenerFechaSeleccionada();
+      const colabId = obtenerColaboradoraSeleccionadaId();
+      const resumen = calcularResumenPorFecha(fecha, colabId);
+
+      document.getElementById("totalServiciosHoy").textContent = resumen.totalServicios;
+      document.getElementById("colabMasTurnos").textContent = resumen.colabMas || "-";
+      document.getElementById("colabMenosTurnos").textContent = resumen.colabMenos || "-";
+
+      const etiqueta = document.getElementById("etiquetaFecha");
+      if (etiqueta) {
+        let texto = formatearFechaHumana(fecha);
+        if (colabId) {
+          const nombre = obtenerNombreColaboradora(colabId);
+          if (nombre) texto += " · " + nombre;
+        } else {
+          texto += " · Todas las colaboradoras";
+        }
+        etiqueta.textContent = texto;
+      }
+
+      const inputFecha = document.getElementById("inputFechaBusqueda");
+      if (inputFecha && !inputFecha.value) {
+        inputFecha.value = fecha;
+      }
+
+      const select = document.getElementById("selectColaboradoraFiltro");
+      if (select) {
+        const actual = obtenerColaboradoraSeleccionadaId();
+        select.value = actual || "";
+      }
+    }
+
+    function abrirDashboard() {
+      const contGrid = document.getElementById("dashboardContenido");
+      contGrid.innerHTML = "";
+
+      const fecha = obtenerFechaSeleccionada();
+      const colabId = obtenerColaboradoraSeleccionadaId();
+      const resumen = calcularResumenPorFecha(fecha, colabId);
+      const regsFecha = resumen.registros;
+      const listaOrdenada = [...resumen.lista].sort((a, b) => b.turnos - a.turnos);
+      const maxTurnos = listaOrdenada.reduce((max, x) => Math.max(max, x.turnos), 0);
+
+      const titulo = document.getElementById("tituloDashboard");
+      const subtitulo = document.getElementById("subtituloDashboard");
+      if (titulo) titulo.textContent = "Dashboard de turnos";
+      if (subtitulo) {
+        let sub = "Día: " + formatearFechaHumana(fecha);
+        if (colabId) {
+          const nombre = obtenerNombreColaboradora(colabId);
+          if (nombre) sub += " · Colaboradora: " + nombre;
+        } else {
+          sub += " · Todas las colaboradoras";
+        }
+        subtitulo.textContent = sub;
+      }
+
+      // PANEL 1: tarjetas métricas
+      const panelMetricas = document.createElement("div");
+      panelMetricas.className = "md:col-span-2 grid gap-3 md:grid-cols-3";
+
+      const card1 = document.createElement("div");
+      card1.className = "panel-soft p-3 flex flex-col justify-between";
+      card1.innerHTML =
+        "<div class='text-[11px] uppercase tracking-wide text-slate-500'>Servicios</div>" +
+        "<div class='text-3xl font-semibold mt-1 text-slate-900'>" + resumen.totalServicios + "</div>";
+
+      const card2 = document.createElement("div");
+      const totalIngresos = resumen.lista.reduce((acc, x) => acc + x.ingresos, 0);
+      card2.className = "panel-soft p-3 flex flex-col justify-between";
+      card2.innerHTML =
+        "<div class='text-[11px] uppercase tracking-wide text-slate-500'>Ingresos totales</div>" +
+        "<div class='text-xl font-semibold mt-1 text-emerald-600'>" + formatearCOP(totalIngresos) + "</div>";
+
+      const card3 = document.createElement("div");
+      const totalComision = resumen.lista.reduce((acc, x) => acc + x.comision, 0);
+      card3.className = "panel-soft p-3 flex flex-col justify-between";
+      card3.innerHTML =
+        "<div class='text-[11px] uppercase tracking-wide text-slate-500'>Comisión total</div>" +
+        "<div class='text-xl font-semibold mt-1 text-sky-600'>" + formatearCOP(totalComision) + "</div>";
+
+      panelMetricas.appendChild(card1);
+      panelMetricas.appendChild(card2);
+      panelMetricas.appendChild(card3);
+      contGrid.appendChild(panelMetricas);
+
+      // PANEL 2: gráfico barras
+      const panelBarras = document.createElement("div");
+      panelBarras.className = "panel-soft p-3 flex flex-col gap-3";
+
+      const tituloGraf = document.createElement("div");
+      tituloGraf.className = "flex items-center justify-between";
+      tituloGraf.innerHTML =
+        "<span class='text-[11px] uppercase tracking-wide text-slate-500'>Turnos por colaboradora</span>" +
+        "<span class='text-[10px] pill-accent px-2 py-0.5 rounded-full'>Vista del día seleccionado</span>";
+
+      const grafico = document.createElement("div");
+      grafico.className = "flex flex-col gap-2 mt-1";
+
+      if (listaOrdenada.length === 0) {
+        const vacio = document.createElement("div");
+        vacio.className = "text-[11px] text-slate-500";
+        vacio.textContent = "Aún no hay servicios registrados en esa fecha.";
+        grafico.appendChild(vacio);
+      } else {
+        listaOrdenada.forEach((x) => {
+          const fila = document.createElement("div");
+          fila.className = "flex items-center gap-2";
+
+          const etiqueta = document.createElement("div");
+          etiqueta.className = "w-24 text-[11px] text-slate-700 truncate";
+          etiqueta.textContent = x.nombre;
+
+          const barraCont = document.createElement("div");
+          barraCont.className =
+            "flex-1 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200";
+
+          const barra = document.createElement("div");
+          barra.className = "h-2 rounded-full";
+          barra.style.background =
+            "linear-gradient(90deg,var(--accent),var(--accent-strong))";
+          const ancho = maxTurnos ? (x.turnos / maxTurnos) * 100 : 0;
+          barra.style.width = ancho + "%";
+
+          barraCont.appendChild(barra);
+
+          const valor = document.createElement("div");
+          valor.className = "w-6 text-[11px] text-right text-slate-700";
+          valor.textContent = x.turnos;
+
+          fila.appendChild(etiqueta);
+          fila.appendChild(barraCont);
+          fila.appendChild(valor);
+          grafico.appendChild(fila);
+        });
+      }
+
+      panelBarras.appendChild(tituloGraf);
+      panelBarras.appendChild(grafico);
+      contGrid.appendChild(panelBarras);
+
+      // PANEL 3: tabla detalle por colaboradora
+      const panelTabla = document.createElement("div");
+      panelTabla.className = "panel-soft p-3 md:col-span-3";
+
+      const tituloTabla = document.createElement("div");
+      tituloTabla.className = "flex items-center justify-between mb-2";
+      tituloTabla.innerHTML =
+        "<span class='text-[11px] uppercase tracking-wide text-slate-500'>Detalle por colaboradora</span>" +
+        "<span class='text-[10px] text-slate-400'>Día seleccionado</span>";
+
+      const tabla = document.createElement("table");
+      tabla.className = "w-full text-[11px]";
+
+      const thead = document.createElement("thead");
+      thead.className = "border-b border-slate-200 text-slate-500";
+      thead.innerHTML =
+        "<tr>" +
+        "<th class='py-1 pr-2 text-left'>Colaboradora</th>" +
+        "<th class='py-1 pr-2 text-center'>Turnos</th>" +
+        "<th class='py-1 pr-2 text-right'>Ingresos</th>" +
+        "<th class='py-1 pr-2 text-right'>Comisión</th>" +
+        "</tr>";
+
+      const tbody = document.createElement("tbody");
+      listaOrdenada.forEach((x) => {
+        const tr = document.createElement("tr");
+        tr.className = "align-middle border-b border-slate-100 last:border-none";
+
+        const tdNombre = document.createElement("td");
+        tdNombre.className = "py-1 pr-2 text-slate-800";
+        tdNombre.textContent = x.nombre;
+
+        const tdTurnos = document.createElement("td");
+        tdTurnos.className = "py-1 pr-2 text-center text-slate-700";
+        tdTurnos.textContent = x.turnos;
+
+        const tdIngresos = document.createElement("td");
+        tdIngresos.className = "py-1 pr-2 text-right text-emerald-600";
+        tdIngresos.textContent = formatearCOP(x.ingresos);
+
+        const tdComision = document.createElement("td");
+        tdComision.className = "py-1 pr-2 text-right text-sky-600";
+        tdComision.textContent = formatearCOP(x.comision);
+
+        tr.appendChild(tdNombre);
+        tr.appendChild(tdTurnos);
+        tr.appendChild(tdIngresos);
+        tr.appendChild(tdComision);
+        tbody.appendChild(tr);
+      });
+
+      tabla.appendChild(thead);
+      tabla.appendChild(tbody);
+      panelTabla.appendChild(tituloTabla);
+      contGrid.appendChild(panelTabla);
+
+      // PANEL 4: historial del día
+      const panelHist = document.createElement("div");
+      panelHist.className = "panel-soft p-3 md:col-span-3";
+
+      const tituloHist = document.createElement("div");
+      tituloHist.className = "flex items-center justify-between mb-2";
+      tituloHist.innerHTML =
+        "<span class='text-[11px] uppercase tracking-wide text-slate-500'>Últimos servicios del día</span>" +
+        "<span class='text-[10px] text-slate-400'>Ordenados del más reciente</span>";
+
+      const listaHist = document.createElement("div");
+      listaHist.className = "flex flex-col gap-1 max-h-48 overflow-auto scrollbar-thin";
+
+      const ordenHist = [...regsFecha].sort((a, b) => b.fin - a.fin).slice(0, 25);
+      if (ordenHist.length === 0) {
+        const vac = document.createElement("div");
+        vac.className = "text-[11px] text-slate-500";
+        vac.textContent = "Todavía no hay servicios cargados en esa fecha.";
+        listaHist.appendChild(vac);
+      } else {
+        ordenHist.forEach((r) => {
+          const item = document.createElement("div");
+          item.className =
+            "flex justify-between text-[11px] border-b border-slate-100 pb-1";
+
+          const izq = document.createElement("div");
+          izq.className = "flex-1 text-slate-800";
+          izq.textContent = r.colaboradoraNombre + " · " + r.servicioNombre;
+
+          const der = document.createElement("div");
+          der.className = "ml-2 text-right text-slate-500";
+          der.textContent = r.duracionMin + " min";
+
+          item.appendChild(izq);
+          item.appendChild(der);
+          listaHist.appendChild(item);
+        });
+      }
+
+      panelHist.appendChild(tituloHist);
+      panelHist.appendChild(listaHist);
+      contGrid.appendChild(panelHist);
+
+      document.getElementById("modalDashboard").classList.remove("hidden");
+      document.getElementById("modalDashboard").classList.add("flex");
+    }
+
+    // =========================
+    // Servicios (modal y tabla)
+    // =========================
+    function renderServiciosTabla() {
+      const tbody = document.getElementById("tablaServicios");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      if (state.servicios.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5;
+        td.className = "py-2 text-center text-slate-500";
+        td.textContent = "Aún no hay servicios configurados. Agrega uno arriba.";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+
+      state.servicios.forEach((srv) => {
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-slate-100 last:border-none";
+
+        const tdNombre = document.createElement("td");
+        tdNombre.className = "py-1 pr-2";
+        tdNombre.textContent = srv.nombre;
+
+        const tdMin = document.createElement("td");
+        tdMin.className = "py-1 pr-2 text-center";
+        tdMin.textContent = srv.minutos;
+
+        const tdCosto = document.createElement("td");
+        tdCosto.className = "py-1 pr-2 text-right";
+        tdCosto.textContent = formatearCOP(srv.costo);
+
+        const tdPorc = document.createElement("td");
+        tdPorc.className = "py-1 pr-2 text-right";
+        tdPorc.textContent = srv.porcentaje + " %";
+
+        const tdAccion = document.createElement("td");
+        tdAccion.className = "py-1 text-right";
+
+        const btnDel = document.createElement("button");
+        btnDel.type = "button";
+        btnDel.className = "text-[11px] text-red-500 hover:text-red-600";
+        btnDel.textContent = "Eliminar";
+        btnDel.addEventListener("click", () => {
+          if (confirm("¿Eliminar este servicio?")) {
+            state.servicios = state.servicios.filter((s) => s.id !== srv.id);
+            state.colaboradoras.forEach((c) => {
+              if (c.servicioSeleccionadoId === srv.id) {
+                c.servicioSeleccionadoId = null;
+              }
+              if (c.servicioEnCurso && c.servicioEnCurso.servicioId === srv.id) {
+                c.servicioEnCurso = null;
+              }
+            });
+            guardarEstado();
+            renderTodo();
+          }
+        });
+
+        tdAccion.appendChild(btnDel);
+
+        tr.appendChild(tdNombre);
+        tr.appendChild(tdMin);
+        tr.appendChild(tdCosto);
+        tr.appendChild(tdPorc);
+        tr.appendChild(tdAccion);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function abrirModalServicios() {
+      renderServiciosTabla();
+      const modal = document.getElementById("modalServicios");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function cerrarModalServicios() {
+      const modal = document.getElementById("modalServicios");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // =========================
+    // Administrar colaboradoras
+    // =========================
+    function renderTablaColaboradoras() {
+      const tbody = document.getElementById("tablaColaboradoras");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const lista = obtenerColaboradorasOrdenadas();
+
+      lista.forEach((c) => {
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-slate-100 last:border-none";
+
+        const tdNombre = document.createElement("td");
+        tdNombre.className = "py-1 pr-2 text-slate-800";
+        tdNombre.textContent = c.nombre;
+
+        const tdPos = document.createElement("td");
+        tdPos.className = "py-1 pr-2 text-center text-slate-700";
+        tdPos.textContent = c.orden + 1;
+
+        const tdActiva = document.createElement("td");
+        tdActiva.className = "py-1 pr-2 text-center";
+        tdActiva.textContent = c.activa ? "Sí" : "No";
+
+        const tdAccion = document.createElement("td");
+        tdAccion.className = "py-1 text-right";
+
+        const btnDel = document.createElement("button");
+        btnDel.type = "button";
+        btnDel.className = "text-[11px] text-red-500 hover:text-red-600";
+        btnDel.textContent = "Eliminar";
+        btnDel.addEventListener("click", () => {
+          if (
+            confirm(
+              "¿Eliminar esta colaboradora y su historial de servicios?\n\nColaboradora: " +
+              c.nombre
+            )
+          ) {
+            state.historial = state.historial.filter((h) => h.colaboradoraId !== c.id);
+            state.colaboradoras = state.colaboradoras.filter((x) => x.id !== c.id);
+            state.colaboradoras.forEach((col, idx) => (col.orden = idx));
+            guardarEstado();
+            renderTodo();
+          }
+        });
+
+        tdAccion.appendChild(btnDel);
+
+        tr.appendChild(tdNombre);
+        tr.appendChild(tdPos);
+        tr.appendChild(tdActiva);
+        tr.appendChild(tdAccion);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function abrirModalColaboradoras() {
+      renderTablaColaboradoras();
+      const modal = document.getElementById("modalColaboradoras");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function cerrarModalColaboradoras() {
+      const modal = document.getElementById("modalColaboradoras");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // =========================
+    // Exportar CSV / XML (todos los días)
+    // =========================
+    function descargarArchivo(texto, nombreArchivo, tipoMime) {
+      const blob = new Blob([texto], { type: tipoMime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nombreArchivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportarCSV() {
+      const encabezados = [
+        "fecha",
+        "colaboradora",
+        "servicio",
+        "costo_COP",
+        "porcentaje_colab",
+        "comision_COP",
+        "duracion_min",
+        "inicio_timestamp",
+        "fin_timestamp"
+      ];
+      const filas = [encabezados.join(",")];
+
+      state.historial.forEach((r) => {
+        const fila = [
+          r.fecha,
+          '"' + (r.colaboradoraNombre || "").replace(/"/g, '""') + '"',
+          '"' + (r.servicioNombre || "").replace(/"/g, '""') + '"',
+          r.costo,
+          r.porcentaje,
+          r.comision,
+          r.duracionMin,
+          r.inicio,
+          r.fin
+        ];
+        filas.push(fila.join(","));
+      });
+
+      const csv = filas.join("\n");
+      descargarArchivo(csv, "turnos_manicura.csv", "text/csv;charset=utf-8;");
+    }
+
+    function exportarXML() {
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      xml += "<turnos_manicura>\n";
+      state.historial.forEach((r) => {
+        xml += "  <registro>\n";
+        xml += "    <fecha>" + r.fecha + "</fecha>\n";
+        xml += "    <colaboradora>" + escapeXml(r.colaboradoraNombre) + "</colaboradora>\n";
+        xml += "    <servicio>" + escapeXml(r.servicioNombre) + "</servicio>\n";
+        xml += "    <costo_COP>" + r.costo + "</costo_COP>\n";
+        xml += "    <porcentaje_colab>" + r.porcentaje + "</porcentaje_colab>\n";
+        xml += "    <comision_COP>" + r.comision + "</comision_COP>\n";
+        xml += "    <duracion_min>" + r.duracionMin + "</duracion_min>\n";
+        xml += "    <inicio_timestamp>" + r.inicio + "</inicio_timestamp>\n";
+        xml += "    <fin_timestamp>" + r.fin + "</fin_timestamp>\n";
+        xml += "  </registro>\n";
+      });
+      xml += "</turnos_manicura>\n";
+
+      descargarArchivo(xml, "turnos_manicura.xml", "application/xml;charset=utf-8;");
+    }
+
+    function escapeXml(unsafe) {
+      if (!unsafe) return "";
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+    }
+
+    // =========================
+    // Crear nueva colaboradora
+    // =========================
+    function crearNuevaColaboradora() {
+      const nombre = prompt(
+        "Nombre de la nueva colaboradora:",
+        "Colaboradora " + (state.colaboradoras.length + 1)
+      );
+      if (!nombre) return;
+      const orden = state.colaboradoras.length;
+      state.colaboradoras.push({
+        id: generarId("col"),
+        nombre: nombre,
+        foto: "",
+        activa: true,
+        orden: orden,
+        servicioSeleccionadoId: null,
+        servicioEnCurso: null
+      });
+      guardarEstado();
+      renderTodo();
+    }
+
+    // =========================
+    // Inicio y cierre de día
+    // =========================
+    function iniciarDiaHoy() {
+      const hoy = hoyISO();
+      establecerFechaSeleccionada(hoy);
+      const input = document.getElementById("inputFechaBusqueda");
+      if (input) input.value = hoy;
+      alert("Día iniciado: " + formatearFechaHumana(hoy));
+    }
+
+    function cerrarDiaActual() {
+      const fecha = obtenerFechaSeleccionada();
+      const resumen = calcularResumenPorFecha(fecha); // todos
+      if (resumen.totalServicios === 0) {
+        const confirmar = confirm(
+          "No hay servicios registrados en " +
+          formatearFechaHumana(fecha) +
+          ".\n¿Deseas cerrar el día de todas formas?"
+        );
+        if (!confirmar) return;
+      }
+      state.config.diasCerrados[fecha] = {
+        fecha,
+        totalServicios: resumen.totalServicios,
+        totalIngresos: resumen.lista.reduce((acc, x) => acc + x.ingresos, 0),
+        totalComision: resumen.lista.reduce((acc, x) => acc + x.comision, 0),
+        cerradoEn: Date.now()
+      };
+      guardarEstado();
+      alert("Información del día " + formatearFechaHumana(fecha) + " guardada correctamente.");
+    }
+
+    // =========================
+    // Inicialización
+    // =========================
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarEstado();
+      renderTodo();
+
+      // Tema
+      cargarTema();
+      const picker = document.getElementById("colorAccent");
+      if (picker) {
+        picker.addEventListener("input", (e) => {
+          const val = e.target.value || "#6366f1";
+          aplicarTema(val);
+          guardarTema(val);
+        });
+      }
+
+      // Inicializar input fecha con la fecha seleccionada
+      const inputFecha = document.getElementById("inputFechaBusqueda");
+      if (inputFecha) {
+        inputFecha.value = obtenerFechaSeleccionada();
+      }
+
+      // Botones generales
+      document.getElementById("btnNuevaColaboradora").addEventListener("click", crearNuevaColaboradora);
+      document.getElementById("btnConfigServicios").addEventListener("click", abrirModalServicios);
+      document.getElementById("btnCerrarServicios").addEventListener("click", cerrarModalServicios);
+      document.getElementById("btnExportCSV").addEventListener("click", exportarCSV);
+      document.getElementById("btnExportXML").addEventListener("click", exportarXML);
+      document.getElementById("btnDashboard").addEventListener("click", abrirDashboard);
+      document.getElementById("btnCerrarDashboard").addEventListener("click", () => {
+        const modal = document.getElementById("modalDashboard");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      });
+      document.getElementById("btnAdminColaboradoras").addEventListener("click", abrirModalColaboradoras);
+      document.getElementById("btnCerrarColaboradoras").addEventListener("click", cerrarModalColaboradoras);
+
+      // Inicio / cierre de día
+      document.getElementById("btnIniciarDia").addEventListener("click", iniciarDiaHoy);
+      document.getElementById("btnCerrarDia").addEventListener("click", cerrarDiaActual);
+
+      // Buscar por fecha + colaboradora
+      document.getElementById("btnVerDia").addEventListener("click", () => {
+        const val = document.getElementById("inputFechaBusqueda").value;
+        if (!val) {
+          alert("Selecciona una fecha para consultar.");
+          return;
+        }
+        establecerFechaSeleccionada(val);
+
+        const select = document.getElementById("selectColaboradoraFiltro");
+        if (select) {
+          establecerColaboradoraSeleccionada(select.value || null);
+        }
+        alert("Mostrando información para: " + formatearFechaHumana(val));
+      });
+
+      const selectColab = document.getElementById("selectColaboradoraFiltro");
+      if (selectColab) {
+        selectColab.addEventListener("change", (e) => {
+          establecerColaboradoraSeleccionada(e.target.value || null);
+        });
+      }
+
+      // Cerrar modales clic por fuera
+      document.getElementById("modalServicios").addEventListener("click", (e) => {
+        if (e.target.id === "modalServicios") cerrarModalServicios();
+      });
+      document.getElementById("modalDashboard").addEventListener("click", (e) => {
+        if (e.target.id === "modalDashboard") {
+          const modal = document.getElementById("modalDashboard");
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
+        }
+      });
+      document.getElementById("modalColaboradoras").addEventListener("click", (e) => {
+        if (e.target.id === "modalColaboradoras") cerrarModalColaboradoras();
+      });
+
+      // Form servicios
+      document.getElementById("formServicio").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById("servicioNombre").value.trim();
+        const minutos = parseInt(document.getElementById("servicioMinutos").value, 10);
+        const costo = parseInt(document.getElementById("servicioCosto").value, 10);
+        const porcentaje = parseFloat(document.getElementById("servicioPorcentaje").value);
+
+        if (!nombre || !minutos || isNaN(costo) || isNaN(porcentaje)) {
+          alert("Por favor completa todos los campos del servicio.");
+          return;
+        }
+
+        state.servicios.push({
+          id: generarId("srv"),
+          nombre,
+          minutos,
+          costo,
+          porcentaje
+        });
+
+        guardarEstado();
+        // Limpiar formulario
+        document.getElementById("servicioNombre").value = "";
+        document.getElementById("servicioMinutos").value = "";
+        document.getElementById("servicioCosto").value = "";
+        document.getElementById("servicioPorcentaje").value = "";
+        renderTodo();
+      });
+    });
+  </script>
+</body>
+
+</html>

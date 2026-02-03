@@ -1,0 +1,19 @@
+﻿=== ANALISIS MODULO COLABORADORES ===
+
+1. ESPECIALISTAS EN DB: 3
+
+2. COLABORADORES CON CREDENCIALES COMPLETAS (email + pin + activo): 3
+
+   - Liliana Guti├®rrez | liliana@test.com | PIN: 1234
+   - Paola Ramirez | paola@test.com | PIN: 1234
+   - Cristian | neuracore.apps.dev@gmail.com | PIN: 1403
+
+3. TODOS LOS ESPECIALISTAS:
+   ID: 1 | Liliana Guti├®rrez | email: liliana@test.com | PIN: 1234 | Activo: Si
+   ID: 2 | Paola Ramirez | email: paola@test.com | PIN: 1234 | Activo: Si
+   ID: 3 | Cristian | email: neuracore.apps.dev@gmail.com | PIN: 1403 | Activo: Si
+
+4. TABLAS RELACIONADAS:
+   - specialists: 3 registros
+   - messages: 0 registros
+   - news: 0 registros

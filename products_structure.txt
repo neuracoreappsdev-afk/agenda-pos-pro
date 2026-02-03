@@ -1,0 +1,11 @@
+id: int(11)
+name: varchar(255)
+sku: varchar(100)
+category: varchar(100)
+price: decimal(12,2)
+cost: decimal(12,2)
+quantity: int(11)
+min_quantity: int(11)
+active: tinyint(4)
+created_at: timestamp
+updated_at: timestamp

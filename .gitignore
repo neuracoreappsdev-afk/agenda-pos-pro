@@ -1,0 +1,12 @@
+/node_modules
+/.pnp
+.pnp.js
+/vendor
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db

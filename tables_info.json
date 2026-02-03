@@ -1,0 +1,46 @@
+{
+    "sale_items": [
+        "id",
+        "sale_id",
+        "item_type",
+        "item_id",
+        "item_name",
+        "quantity",
+        "unit_price",
+        "discount",
+        "total",
+        "specialist_id",
+        "commission",
+        "created_at"
+    ],
+    "inventory_logs": "NOT EXISTS",
+    "payments": "NOT EXISTS",
+    "cash_movements": [
+        "id",
+        "type",
+        "concept",
+        "amount",
+        "payment_method",
+        "reference",
+        "notes",
+        "movement_date",
+        "created_at"
+    ],
+    "sales": [
+        "id",
+        "total",
+        "subtotal",
+        "discount",
+        "payment_method",
+        "customer_id",
+        "customer_name",
+        "user_id",
+        "cash_register_session_id",
+        "notes",
+        "items_json",
+        "created_at",
+        "updated_at",
+        "sale_date",
+        "specialist_id"
+    ]
+}

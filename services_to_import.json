@@ -1,0 +1,576 @@
+[
+    {
+        "category": "MAQUILLAJE",
+        "sku": "",
+        "name": "Hidralips",
+        "price": 88000,
+        "duration": 60
+    },
+    {
+        "category": "MAQUILLAJE",
+        "sku": "",
+        "name": "Maquillaje Glam desde",
+        "price": 160000,
+        "duration": 60
+    },
+    {
+        "category": "MAQUILLAJE",
+        "sku": "",
+        "name": "Maquillaje Fantasía desde",
+        "price": 150000,
+        "duration": 60
+    },
+    {
+        "category": "MAQUILLAJE",
+        "sku": "",
+        "name": "Maquillaje Fotográfico desde",
+        "price": 150000,
+        "duration": 60
+    },
+    {
+        "category": "MAQUILLAJE",
+        "sku": "",
+        "name": "Maquillaje Social desde",
+        "price": 130000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Extensiones de pestañas desde",
+        "price": 250000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Spa de cejas",
+        "price": 73000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Spa de axilas",
+        "price": 40000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Spa de bikini (MUJER)",
+        "price": 88000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Depilación de cejas [SIN DISEÑO]",
+        "price": 23000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Bigote.",
+        "price": 11000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Ceja sombra.",
+        "price": 28000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Diseño de cejas [CON HENNA]",
+        "price": 42000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Bikini completo (MUJER)",
+        "price": 31000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Bikini parcial (MUJER)",
+        "price": 25000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Media pierna (MUJER)",
+        "price": 25000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Pierna completa (MUJER)",
+        "price": 36000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Axilas en hilo",
+        "price": 18000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Laminado de cejas.",
+        "price": 80000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Mentón en hilo.",
+        "price": 13000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Patillas en hilo.",
+        "price": 14000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Bigote en hilo.",
+        "price": 14000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Cejas en hilo [SIN DISEÑO]",
+        "price": 24000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Pecho alto (HOMBRE)",
+        "price": 20000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Espalda baja (MUJER)",
+        "price": 15000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Glúteos precio (MUJER)",
+        "price": 20000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Pecho completo (HOMBRE)",
+        "price": 29000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Media pierna (HOMBRE)",
+        "price": 33000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Brazo completo (MUJER)",
+        "price": 28000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Medio brazo (MUJER)",
+        "price": 27000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Abdomen (HOMBRE)",
+        "price": 19000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Muslo (MUJER)",
+        "price": 26000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Línea glútea precio (MUJER)",
+        "price": 18000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Abdomen (MUJER)",
+        "price": 15000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Axilas en cera",
+        "price": 10000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Nariz.",
+        "price": 9000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Patillas.",
+        "price": 11000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Mentón.",
+        "price": 10000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Frente.",
+        "price": 9000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Diseño solo.",
+        "price": 25000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Cejas con cuchilla.",
+        "price": 15000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Mechas desde...",
+        "price": 400000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Repolarización desde",
+        "price": 67000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Botox desde",
+        "price": 250000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Keratina Desde...",
+        "price": 30000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Trenzas desde...",
+        "price": 80000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Peinados desde...",
+        "price": 100000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Blower - Cepillados desde",
+        "price": 150000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Corte de cabello.",
+        "price": 22000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Aplicación sin tinte.",
+        "price": 40000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Aplicación más tinte.",
+        "price": 33000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Lifting de pestañas.",
+        "price": 90000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Postura de pestañas [sin producto]",
+        "price": 28000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Tintura de pestañas",
+        "price": 25000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Retoque de Press On.",
+        "price": 90000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Uñas en Press On.",
+        "price": 90000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Tips en esmalte semipermanente.",
+        "price": 53000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Tips en esmalte tradicional.",
+        "price": 35000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Uña acrílica (unidad).",
+        "price": 16000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Retoque de acrílico",
+        "price": 97000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Manos semipermanente y pies tradicionales.",
+        "price": 73000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Uñas Acrílicas Desde..",
+        "price": 200000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Retiro de esmalte acrílico.",
+        "price": 36000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Retiro de esmalte semipermanente.",
+        "price": 17000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Maquillaje de pies.",
+        "price": 12000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Maquillaje de manos.",
+        "price": 12000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Manos y pies en esmalte semipermanente.",
+        "price": 87000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Pies en esmalte semipermanente.",
+        "price": 40000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Manos en esmalte semipermanente.",
+        "price": 40000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Manos y pies en esmalte tradicional.",
+        "price": 29000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Pies en esmalte tradicional.",
+        "price": 19000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Manos en esmalte tradicional.",
+        "price": 19000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Retiro uñas press on",
+        "price": 22000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Medio brazo (HOMBRE)",
+        "price": 24000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Brazo completo (HOMBRE)",
+        "price": 26000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Espalda baja (HOMBRE)",
+        "price": 18000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Espalda completa (HOMBRE)",
+        "price": 30000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Pierna completa (HOMBRE)",
+        "price": 41000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Muslo (HOMBRE)",
+        "price": 29000,
+        "duration": 60
+    },
+    {
+        "category": "ESTÉTICA",
+        "sku": "",
+        "name": "Postura de pestañas [con producto]",
+        "price": 25000,
+        "duration": 60
+    },
+    {
+        "category": "MANICURA.",
+        "sku": "",
+        "name": "Base ruber uña natural",
+        "price": 79000,
+        "duration": 60
+    },
+    {
+        "category": "ESTILISTAS",
+        "sku": "",
+        "name": "Lavado de cabello sencillo",
+        "price": 18000,
+        "duration": 60
+    }
+]

@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Sale;
+use App\Models\SaleItem;
+use App\Models\Product;
+use App\Models\Package;
+use App\Models\Specialist;
+use App\Models\CashMovement;
+use App\Models\Customer;
+use App\Models\ReferenceSource;
+// use App\Models\LoyaltyPoint; // Assuming model exists or will be created
+// use App\Models\TechnicalSheet; // Assuming model exists or will be created
+use Carbon\Carbon;
+use DB;
+
+class ReportsController extends Controller
+{
+    // ... existing code ...
+    // I will append the new methods at the end or replace the whole file if easier, but replace_file_content is better.
+    // However, the file is large. I will use multi_replace or append.
+    // Actually, I'll use read_file to check the end and append.
+}

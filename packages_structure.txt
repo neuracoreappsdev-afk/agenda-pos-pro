@@ -1,0 +1,7 @@
+Field: id | Type: int(10) unsigned | Null: NO | Key: PRI | Default: NULL | Extra: auto_increment
+Field: package_name | Type: varchar(255) | Null: NO | Key:  | Default: NULL | Extra: 
+Field: package_price | Type: decimal(11,0) | Null: NO | Key:  | Default: NULL | Extra: 
+Field: package_time | Type: int(11) | Null: NO | Key:  | Default: NULL | Extra: 
+Field: package_description | Type: text | Null: NO | Key:  | Default: NULL | Extra: 
+Field: created_at | Type: timestamp | Null: NO | Key:  | Default: 0000-00-00 00:00:00 | Extra: 
+Field: updated_at | Type: timestamp | Null: NO | Key:  | Default: 0000-00-00 00:00:00 | Extra: 
